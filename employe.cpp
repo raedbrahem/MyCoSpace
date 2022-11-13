@@ -64,6 +64,22 @@ QSqlQueryModel * Employe::afficher()
 return model;
 }
 
+QSqlQueryModel * Employe::chercherprenom()
+{
+    QSqlQueryModel * model= new QSqlQueryModel();
+    model->setQuery("SELECT prenom from employe");
+    model->setHeaderData(0, Qt::Horizontal, QObject::tr("prenom"));
+return model;
+}
+
+QSqlQueryModel* Employe::cherchernom()
+{
+    QSqlQueryModel * model= new QSqlQueryModel();
+    model->setQuery("SELECT nom from employe");
+    model->setHeaderData(0, Qt::Horizontal, QObject::tr("nom"));
+return model;
+}
+
 QSqlQueryModel * Employe::afficher1()
 {
     QSqlQuery query;
@@ -75,7 +91,29 @@ QSqlQueryModel * Employe::afficher1()
     model->setQuery(query);
     return model;
 }
+QSqlQueryModel * Employe::afficher2()
+{
+    QSqlQuery query;
+    query.prepare("SELECT* from employe where nom= :nom");
+    query.bindValue(":nom",nom);
+    query.exec();
 
+    QSqlQueryModel * model= new QSqlQueryModel;
+    model->setQuery(query);
+    return model;
+}
+
+QSqlQueryModel * Employe::afficher3()
+{
+    QSqlQuery query;
+    query.prepare("SELECT* from employe where prenom= :prenom");
+    query.bindValue(":prenom",prenom);
+    query.exec();
+
+    QSqlQueryModel * model= new QSqlQueryModel;
+    model->setQuery(query);
+    return model;
+}
 
 bool Employe::modifier()
 {
@@ -214,16 +252,15 @@ QChartView * Employe::stat()
     series->append("employee ont un salaire <1000 DT", row_count);
     QChart *chart = new QChart();
     chart->addSeries(series);
-    chart->setTitle("statistic Des salaires");
+    chart->setTitle("statistiques Des salaires");
     chart->setAnimationOptions(QChart::AllAnimations);
     chart->legend()->setAlignment(Qt::AlignRight);
     chart->legend()->setBackgroundVisible(true);
-    chart->legend()->setBrush(QBrush(QColor(128, 128, 128, 128)));
-    chart->legend()->setPen(QPen(QColor(248, 246, 0)));
+    chart->legend()->setBrush(QBrush(QColor(60, 60, 60, 60)));
+    chart->legend()->setPen(QPen(QColor(108, 106, 0)));
     series->setLabelsVisible();
 
     QChartView *chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
     return chartView;
 }
-
