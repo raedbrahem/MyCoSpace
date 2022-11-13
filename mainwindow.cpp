@@ -11,6 +11,8 @@
 #include <QtPrintSupport/QPrinter>
 #include <QFileDialog>
 #include <QTextDocument>
+#include "login.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,10 +35,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->le_prenommaj->setValidator(new QRegExpValidator( QRegExp("[A-Za-z_]{0,255}"), this ));
     ui->le_etatmaj->setValidator(new QRegExpValidator( QRegExp("[A-Za-z_]{0,255}"), this ));
     ui->tab_etudiants->setModel(E.afficher());
-    ui->comboBox->setModel(E.afficher());
+
+    //ui->comboBox->setModel(E.afficher());
+    ui->tab_etudiants2->setModel(user.afficher());
+   // ui->comboBox3->setModel(user.afficher());
     ui->comboBox2->setModel(E.afficher());
+    ui->comboBox22->setModel(E.cherchernom());
+    ui->comboBox222->setModel(E.chercherprenom());
     ui->verticalLayout->addWidget(E.stat());
-    QPieSeries *series = new QPieSeries();
+    //QPieSeries *series = new QPieSeries();
 }
 
 MainWindow::~MainWindow()
@@ -64,17 +71,22 @@ void MainWindow::on_pb_ajouter_clicked()
       QString email=ui->le_email->text();
       QString image=ui->le_imageurl->text();
       Employe E(cin,nom,prenom,email,date,salaire,numtel,etat,adresse,image);
-
       bool test=E.ajouter();
 
     if(test)
     {
         QMessageBox::information(this,"ok","ajout effectué");
         ui->tab_etudiants->setModel(E.afficher());
-        ui->comboBox->addItem(QString::number(cin));
-        ui->comboBox->setModel(E.afficher());
-        ui->comboBox2->addItem(QString::number(cin));
+
+        //ui->comboBox->setModel(E.afficher());
+
         ui->comboBox2->setModel(E.afficher());
+
+
+        ui->comboBox22->setModel(E.chercherprenom());
+
+
+        ui->comboBox222->setModel(E.cherchernom());
         clearLayout(ui->verticalLayout);
         ui->verticalLayout->addWidget(E.stat());
     }
@@ -85,26 +97,38 @@ void MainWindow::on_pb_ajouter_clicked()
 void MainWindow::on_pb_supprimer_clicked()
 {
 Employe E1;
-E1.setcin(ui->comboBox->currentText().toInt());
+E1.setcin(ui->le_cinmaj->text().toInt());
+
 bool test=E1.supprimer(E1.getcin());
 
-if(ui->comboBox->currentText()==NULL)
+if(ui->le_cinmaj->text()==NULL)
     test=0;
 if(test)
 {
      QMessageBox::information(this," ok","suppression effectué");
      ui->tab_etudiants->setModel(E1.afficher());
-     ui->comboBox->removeItem(ui->comboBox->currentText().toInt());
-     ui->comboBox->setModel(E.afficher());
-
-     ui->comboBox2->removeItem(ui->comboBox->currentText().toInt());
+     ui->comboBox22->setModel(E.chercherprenom());
+     ui->comboBox222->setModel(E.cherchernom());
      ui->comboBox2->setModel(E.afficher());
+
+     ui->le_cinmaj->setText(NULL);
+     ui->le_nommaj->setText(NULL);
+     ui->le_prenommaj->setText(NULL);
+     ui->le_emailmaj->setText(NULL);
+     ui->le_datemaj->setText(NULL);
+     ui->le_salairemaj->setText(NULL);
+     ui->le_nummaj->setText(NULL);
+     ui->le_etatmaj->setText(NULL);
+     ui->le_adressemaj->setText(NULL);
+     ui->le_imageurlmaj->setText(NULL);
+
+
      clearLayout(ui->verticalLayout);
      ui->verticalLayout->addWidget(E.stat());
 }
 
 else
-     QMessageBox::warning(this,"not ok","ajout non effectué");
+     QMessageBox::warning(this,"not ok","suppression non effectué");
 }
 
 void MainWindow::on_pb_update_clicked()
@@ -122,39 +146,25 @@ void MainWindow::on_pb_update_clicked()
     Employe E(cin,nom,prenom,email,date,salaire,numtel,etat,adresse,imageurl);
     bool test=E.modifier();
 
-    if (ui->comboBox->currentText()==NULL)
+    if (ui->le_cinmaj->text()==NULL)
         test=0;
     if(test)
     {
         QMessageBox::information(this,"ok","modification effectué");
+        ui->tab_emp->setModel(NULL);
         ui->tab_etudiants->setModel(E.afficher());
+        ui->comboBox222->setModel(E.chercherprenom());
+        ui->comboBox22->setModel(E.cherchernom());
         clearLayout(ui->verticalLayout);
         ui->verticalLayout->addWidget(E.stat());
     }
     else
-        QMessageBox::information(this,"no tok","modification non effectué");
-}
-
-
-void MainWindow::on_pb_chercher_clicked()
-{
-    bool test;
-    Employe E1;
-    E1.setcin(ui->comboBox2->currentText().toInt());
-    test=E1.afficher1();
-    if(ui->comboBox2->currentText()==NULL || test==0)
-        QMessageBox::information(this,"not ok","error");
-    else
-    ui->tab_emp->setModel(E1.afficher1());
+        QMessageBox::warning(this,"not ok","modification non effectué");
 }
 
 
 
-void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
-{
-    Employe E1;
-    E1.setcin(ui->comboBox->currentText().toInt());
-}
+
 
 
 void MainWindow::on_tab_etudiants_activated(const QModelIndex &index)
@@ -175,6 +185,7 @@ void MainWindow::on_tab_etudiants_activated(const QModelIndex &index)
                   ui->le_nummaj->setText(qry.value(6).toString());
                   ui->le_etatmaj->setText(qry.value(7).toString());
                   ui->le_adressemaj->setText(qry.value(8).toString());
+                  ui->le_imageurlmaj->setText(qry.value(9).toString());
                   QImage image;
                   image.load(qry.value(9).toString());
                   image=image.scaledToWidth(ui->le_imagemaj->width(),Qt::SmoothTransformation);
@@ -258,9 +269,7 @@ void MainWindow::on_pb_trier_cin_clicked()
     Employe E1;
     ui->tab_etudiants->setModel(E1.triercin());
 }
-void MainWindow::on_pb_delete_clicked(){}
-void MainWindow::on_list_employes_currentRowChanged(int){}
-void MainWindow::on_tabWidget_2_tabBarClicked(int){}
+
 
 void MainWindow::on_pb_image_clicked()
 {
@@ -294,4 +303,121 @@ void MainWindow::on_pb_imagemaj_clicked()
             ui->le_imageurlmaj->setText(filename);
         }
     }
+}
+
+void MainWindow::on_pb_ajouteruser_clicked()
+{
+
+    QString un=ui->le_unajout->text();
+    QString pw=ui->le_pwajout->text();
+    QString pw1=ui->le_pwajout2->text();
+
+    login user(un,pw);
+    bool test=user.createuser();
+    if(pw!=pw1)
+        test=0;
+    if(test)
+    {
+        ui->tab_etudiants2->setModel(user.afficher());
+
+        //ui->comboBox3->setModel(user.afficher());
+        QMessageBox::information(this,"ok","ajout effectué");
+    }
+    else
+        QMessageBox::warning(this,"not ok","ajout non effectué");
+}
+
+void MainWindow::on_pb_supprimeruser_clicked()
+{
+    login l;
+    l.setusername(ui->le_unmaj->text());
+    bool test=l.supprimer(l.getusername());
+
+    if(ui->le_unmaj->text()==NULL)
+        test=0;
+    if(test)
+    {
+         QMessageBox::information(this," ok","suppression effectué");
+         ui->tab_etudiants2->setModel(l.afficher());
+         //ui->comboBox3->setModel(l.afficher());
+    }
+    else
+    QMessageBox::warning(this,"not ok","suppression non effectué");
+}
+
+void MainWindow::on_tab_etudiants2_activated(const QModelIndex &index)
+{
+    QString username=ui->tab_etudiants2->model()->data(index).toString();
+    QSqlQuery qry;
+    qry.prepare("SELECT* from users where username='"+username+"'");
+    if(qry.exec())
+        {
+            while (qry.next())
+                {
+                  ui->le_unmaj->setText(qry.value(0).toString());
+                  ui->le_pwmaj->setText(qry.value(1).toString());
+                }
+        }
+}
+
+void MainWindow::on_pb_modifiereruser_clicked()
+{
+    QString un=ui->le_unmaj->text();
+    QString pw=ui->le_pwmaj->text();
+    QString pw1=ui->le_pwmaj2->text();
+    login user(un,pw);
+    bool test=user.modifier();
+    if(pw!=pw1)
+        test=0;
+    if(test)
+    {
+        QMessageBox::information(this,"ok","modification effectué");
+        ui->tab_etudiants2->setModel(user.afficher());
+    }
+    else
+        QMessageBox::warning(this,"no ok","modification non effectué");
+
+}
+
+void MainWindow::on_pb_cherchernom_clicked()
+{
+    bool test;
+    Employe E1;
+    E1.setnom(ui->comboBox22->currentText());
+    test=E1.afficher2();
+    if(ui->comboBox22->currentText()==NULL || test==0)
+        QMessageBox::information(this,"not ok","error");
+    else
+    ui->tab_emp->setModel(E1.afficher2());
+}
+
+void MainWindow::on_pbchercherprenom_clicked()
+{
+    bool test;
+    Employe E1;
+    E1.setprenom(ui->comboBox222->currentText());
+    test=E1.afficher3();
+    if(ui->comboBox222->currentText()==NULL || test==0)
+        QMessageBox::information(this,"not ok","error");
+    else
+    ui->tab_emp->setModel(E1.afficher3());
+}
+void MainWindow::on_pb_chercher_clicked()
+{
+    bool test;
+    Employe E1;
+    E1.setcin(ui->comboBox2->currentText().toInt());
+    test=E1.afficher1();
+    if(ui->comboBox2->currentText()==NULL || test==0)
+        QMessageBox::information(this,"not ok","error");
+    else
+    ui->tab_emp->setModel(E1.afficher1());
+}
+void MainWindow::on_pb_delete_clicked(){}
+void MainWindow::on_list_employes_currentRowChanged(int){}
+void MainWindow::on_tabWidget_2_tabBarClicked(int){}
+void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
+{
+    //Employe E1;
+    //E1.setcin(ui->comboBox->currentText().toInt());
 }
