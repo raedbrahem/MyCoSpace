@@ -49,6 +49,10 @@ public:
     bool ajouter();
     QSqlQueryModel * afficher();
     QSqlQueryModel * afficher1();
+    QSqlQueryModel * afficher2();
+    QSqlQueryModel * afficher3();
+    QSqlQueryModel * chercherprenom();
+    QSqlQueryModel * cherchernom();
     bool supprimer(int);
     bool modifier();
     QSqlQueryModel * trier();
