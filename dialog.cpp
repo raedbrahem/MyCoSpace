@@ -20,7 +20,7 @@ void Dialog::on_pb_connect_clicked()
     QString username=ui->le_un->text();
     QString password=ui->le_pw->text();
     QSqlQuery qry;
-    qry.prepare("SELECT* from users where name='"+username+"'and pw='"+password+"'");
+    qry.prepare("SELECT* from users where username='"+username+"'and password='"+password+"'");
     if(qry.exec())
       {
         while (qry.next())
