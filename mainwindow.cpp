@@ -12,6 +12,7 @@
 #include <QFileDialog>
 #include <QTextDocument>
 #include "login.h"
+#include "arduino.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -19,6 +20,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    int ret=A.connect_arduino(); // lancer la connexion à arduino
+        switch(ret){
+        case(0):qDebug()<< "arduino is available and connected to : "<< A.getarduino_port_name();
+            break;
+        case(1):qDebug() << "arduino is available but not connected to :" <<A.getarduino_port_name();
+           break;
+        case(-1):qDebug() << "arduino is not available";
+        }
+    QObject::connect(A.getserial(),SIGNAL(readyRead()),this,SLOT(update_label()));
     ui->le_cin->setValidator(new QIntValidator(0,9999999,this));
     ui->le_numtel->setValidator(new QIntValidator(0,99999999,this));
     ui->le_salaire->setValidator(new QIntValidator(0,9999999,this));
@@ -36,16 +46,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->le_etatmaj->setValidator(new QRegExpValidator( QRegExp("[A-Za-z_]{0,255}"), this ));
     ui->tab_etudiants->setModel(E.afficher());
 
-    //ui->comboBox->setModel(E.afficher());
     ui->tab_etudiants2->setModel(user.afficher());
-   // ui->comboBox3->setModel(user.afficher());
     ui->comboBox2->setModel(E.afficher());
     ui->comboBox22->setModel(E.cherchernom());
     ui->comboBox222->setModel(E.chercherprenom());
     ui->verticalLayout->addWidget(E.stat());
-    //QPieSeries *series = new QPieSeries();
 }
-
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -77,15 +83,8 @@ void MainWindow::on_pb_ajouter_clicked()
     {
         QMessageBox::information(this,"ok","ajout effectué");
         ui->tab_etudiants->setModel(E.afficher());
-
-        //ui->comboBox->setModel(E.afficher());
-
         ui->comboBox2->setModel(E.afficher());
-
-
         ui->comboBox22->setModel(E.chercherprenom());
-
-
         ui->comboBox222->setModel(E.cherchernom());
         clearLayout(ui->verticalLayout);
         ui->verticalLayout->addWidget(E.stat());
@@ -191,7 +190,6 @@ void MainWindow::on_tab_etudiants_activated(const QModelIndex &index)
                   image=image.scaledToWidth(ui->le_imagemaj->width(),Qt::SmoothTransformation);
                   ui->le_imagemaj->setPixmap(QPixmap::fromImage(image));
             }
-
         }
 }
 
@@ -339,7 +337,6 @@ void MainWindow::on_pb_supprimeruser_clicked()
     {
          QMessageBox::information(this," ok","suppression effectué");
          ui->tab_etudiants2->setModel(l.afficher());
-         //ui->comboBox3->setModel(l.afficher());
     }
     else
     QMessageBox::warning(this,"not ok","suppression non effectué");
@@ -413,11 +410,59 @@ void MainWindow::on_pb_chercher_clicked()
     else
     ui->tab_emp->setModel(E1.afficher1());
 }
+
+void MainWindow::update_label()
+{
+        data = A.read_from_arduino();
+        if(str.size()<5)
+        {
+         str=str+data;
+         DataAsString = QString::fromStdString(str.toStdString());
+         s="";
+         for(int i=0;i<5;i++)
+             s[i]=DataAsString[i];
+         ui->idres->setText(s);
+        }
+        qDebug()<<"data : "<<s;
+        qDebug()<<"length : "<<s.size();
+}
+
+void MainWindow::on_effacer_clicked()
+{
+A.write_to_arduino("0");
+ui->idres->setText("");
+str="";
+}
+
 void MainWindow::on_pb_delete_clicked(){}
 void MainWindow::on_list_employes_currentRowChanged(int){}
 void MainWindow::on_tabWidget_2_tabBarClicked(int){}
-void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
+void MainWindow::on_comboBox_currentTextChanged(const QString){}
+
+void MainWindow::on_pushButton_clicked()
 {
-    //Employe E1;
-    //E1.setcin(ui->comboBox->currentText().toInt());
+    QSqlQuery query;
+    QString cin=ui->idres->text();
+    query.prepare("SELECT* from reservation where idr='"+cin+"'");
+    if(query.exec())
+      {
+        while (query.next())
+        {
+         if(query.value(0)==cin)
+            {QMessageBox::information(this,"login","correct");
+             A.write_to_arduino("1");
+             qDebug()<<"lmao";
+             A.write_to_arduino("2");
+             QString nom=query.value(2).toString();;
+             A.write_to_arduinonom(nom.toUtf8());
+            }
+         else
+            {QMessageBox::warning(this,"error","error");
+             A.write_to_arduino("0");
+             qDebug()<<"rofl";}
+        }
+      }
+    else QMessageBox::warning(this,"login","error");
 }
+
+
