@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <employe.h>
 #include <QFileDialog>
+
 #include "login.h"
+#include "arduino.h"
 namespace Ui {
 class MainWindow;
 }
@@ -30,7 +32,7 @@ private slots:
 
     void on_tabWidget_2_tabBarClicked(int index);
 
-    void on_comboBox_currentTextChanged(const QString &arg1);
+    void on_comboBox_currentTextChanged(const QString );
 
     void on_pb_trier_nom_clicked();
 
@@ -57,10 +59,22 @@ private slots:
 
     void on_pbchercherprenom_clicked();
 
+    void update_label();
+
+
+    void on_pushButton_clicked();
+
+    void on_effacer_clicked();
+
 private:
     Ui::MainWindow *ui;
     Employe E;
     login user;
+     Arduino A;
+     QByteArray data;
+     QByteArray str;
+     QString  DataAsString ="";
+     QString s;
 };
 
 
