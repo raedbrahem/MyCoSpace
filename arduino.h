@@ -13,7 +13,6 @@ public:     //méthodes de la classe Arduino
     int close_arduino(); // permet de femer la connexion
     int write_to_arduino( QByteArray ); // envoyer des données vers arduino
     int write_to_arduinonom( QByteArray );
-    int write_to_arduinoprenom( QByteArray );
     QByteArray read_from_arduino();  //recevoir des données de la carte Arduino
     QSerialPort* getserial();   // accesseur
     QString getarduino_port_name();
