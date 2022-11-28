@@ -83,10 +83,9 @@ return model;
 QSqlQueryModel * Employe::afficher1()
 {
     QSqlQuery query;
-    query.prepare("SELECT* from employe where cin= :cin");
+    query.prepare("select* from employe where cin= :cin");
     query.bindValue(":cin",cin);
     query.exec();
-
     QSqlQueryModel * model= new QSqlQueryModel;
     model->setQuery(query);
     return model;
@@ -94,7 +93,7 @@ QSqlQueryModel * Employe::afficher1()
 QSqlQueryModel * Employe::afficher2()
 {
     QSqlQuery query;
-    query.prepare("SELECT* from employe where nom= :nom");
+    query.prepare("select* from employe where nom= :nom");
     query.bindValue(":nom",nom);
     query.exec();
 
@@ -106,7 +105,7 @@ QSqlQueryModel * Employe::afficher2()
 QSqlQueryModel * Employe::afficher3()
 {
     QSqlQuery query;
-    query.prepare("SELECT* from employe where prenom= :prenom");
+    query.prepare("select* from employe where prenom= :prenom");
     query.bindValue(":prenom",prenom);
     query.exec();
 
@@ -247,12 +246,12 @@ QChartView * Employe::stat()
             qDebug()<<row_count<<row_count1<<row_count2;
 
     QPieSeries *series = new QPieSeries();
-    series->append("employee ont un salaire >5000 DT", row_count2);
-    series->append("employee ont un salaire entre 5000 et 1000 DT", row_count1);
-    series->append("employee ont un salaire <1000 DT", row_count);
+    series->append("employes ont un salaire >5000 DT", row_count2);
+    series->append("employes ont un salaire entre 5000 et 1000 DT", row_count1);
+    series->append("employes ont un salaire <1000 DT", row_count);
     QChart *chart = new QChart();
     chart->addSeries(series);
-    chart->setTitle("statistiques Des salaires");
+    chart->setTitle("Statistique Des Salaires");
     chart->setAnimationOptions(QChart::AllAnimations);
     chart->legend()->setAlignment(Qt::AlignRight);
     chart->legend()->setBackgroundVisible(true);
