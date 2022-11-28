@@ -434,10 +434,7 @@ ui->idres->setText("");
 str="";
 }
 
-void MainWindow::on_pb_delete_clicked(){}
-void MainWindow::on_list_employes_currentRowChanged(int){}
-void MainWindow::on_tabWidget_2_tabBarClicked(int){}
-void MainWindow::on_comboBox_currentTextChanged(const QString){}
+
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -451,18 +448,20 @@ void MainWindow::on_pushButton_clicked()
          if(query.value(0)==cin)
             {QMessageBox::information(this,"login","correct");
              A.write_to_arduino("1");
-             qDebug()<<"lmao";
+             qDebug()<<"oui";
              A.write_to_arduino("2");
-             QString nom=query.value(2).toString();;
-             A.write_to_arduinonom(nom.toUtf8());
-            }
+             QString nom=query.value(2).toString();
+             A.write_to_arduinonom(nom.toUtf8());}
          else
             {QMessageBox::warning(this,"error","error");
              A.write_to_arduino("0");
-             qDebug()<<"rofl";}
+             qDebug()<<"non";}
         }
       }
-    else QMessageBox::warning(this,"login","error");
+    else {QMessageBox::warning(this,"login","error");}
 }
 
-
+void MainWindow::on_pb_delete_clicked(){}
+void MainWindow::on_list_employes_currentRowChanged(int){}
+void MainWindow::on_tabWidget_2_tabBarClicked(int){}
+void MainWindow::on_comboBox_currentTextChanged(const QString){}
