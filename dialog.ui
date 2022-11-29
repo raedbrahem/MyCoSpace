@@ -82,10 +82,10 @@
    <widget class="QPushButton" name="pb_connect">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>150</x>
       <y>220</y>
-      <width>112</width>
-      <height>34</height>
+      <width>191</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
@@ -100,6 +100,9 @@
       <width>113</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
     </property>
    </widget>
   </widget>
