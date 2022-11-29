@@ -36,8 +36,6 @@ void Dialog::on_pb_connect_clicked()
         }
          if(a==0)
             QMessageBox::warning(this,"login","Username and Password are incorrect");
-
-
       }
 
 }
